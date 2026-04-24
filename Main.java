@@ -1,7 +1,11 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.HashSet;
+import java.util.Set;
+import java.io.File;
+import java.io.FileWriter;
 
-public class Main {
+public class FinalProject {
     
     static ArrayList<String> courses = new ArrayList<String>();
     static ArrayList<String> tasks = new ArrayList<String>();
@@ -11,27 +15,32 @@ public class Main {
 
     static Scanner scanner = new Scanner(System.in);
 
-    public static void main(String[] args) {
-        
+    public static void main(String[] args) throws Exception {
         boolean running = true;
 
-        // Added some sample data so the dashboard isn't lonely
-        courses.add("Math");
-        tasks.add("Test");
-        dueDates.add("Jan 20");
-        points.add(90);
-        progress.add(0);
+        File myObj = new File("data.txt");
+        Scanner myReader = new Scanner(myObj);
+        while (myReader.hasNextLine()) {
+            String data = myReader.nextLine();
+            String[] parts = data.split(",");
+            courses.add(parts[0]);
+            tasks.add(parts[1]);
+            dueDates.add(parts[2]);
+            points.add(Integer.parseInt(parts[3]));
+            progress.add(Integer.parseInt(parts[4]));
+        }
+        myReader.close();
 
         while (running) {
-            System.out.println("\n~ ~ ~ ~ ~ Your Dashboard ~ ~ ~ ~ ~");
+            System.out.println("\n- - - - - Quick Dashboard - - - - -");
             if (courses.size() > 0) {
-                System.out.println("Up next: " + courses.get(0) + " - " + tasks.get(0) + " (Due: " + dueDates.get(0) + ") [Pts: " + points.get(0) + "] - Completion: " + progress.get(0) + "%");
+                System.out.println("Top Task: " + courses.get(0) + " - " + tasks.get(0) + " (Due: " + dueDates.get(0) + ") [Pts: " + points.get(0) + "] - Completion: " + progress.get(0) + "%");
             } else {
-                System.out.println("Looks like you're all caught up! No tasks right now.");
+                System.out.println("No tasks pending.");
             }
             System.out.println("- - - - - - - - - - - - - - -");
 
-            System.out.println("What would you like to do?");
+            System.out.println("Actions:");
             System.out.println("[1] Add Assignment");
             System.out.println("[2] View All Assignments");
             System.out.println("[3] Update Progress");
@@ -42,7 +51,7 @@ public class Main {
             System.out.println("[8] Save and Exit");
             System.out.println("[0] Exit Without Saving");
             
-            System.out.print("Go ahead, pick an option: ");
+            System.out.print("Enter choice: ");
             String choice = scanner.nextLine();
 
             System.out.println("===========================");
@@ -55,116 +64,158 @@ public class Main {
                 updateProgress();
             } else if (choice.equals("4")) {
                 markAssignmentComplete();
+            } else if (choice.equals("5")) {
+                viewByCourse();
+            } else if (choice.equals("6")) {
+                viewAnalytics();
+            } else if (choice.equals("7")) {
+                manageCourses();
             } else if (choice.equals("8")) {
-                System.out.println("Saving... (Just kidding, I don't have a database yet!). Goodbye!");
+                FileWriter myWriter = new FileWriter("data.txt");
+                for (int i = 0; i < courses.size(); i++) {
+                    myWriter.write(courses.get(i) + "," + tasks.get(i) + "," + dueDates.get(i) + "," + points.get(i) + "," + progress.get(i) + "\n");
+                }
+                myWriter.close();
+                System.out.println("Data saved.");
                 running = false;
             } else if (choice.equals("0")) {
-                System.out.println("Exiting without saving. See you next time!");
                 running = false;
             } else {
-                // Fallback for options 5, 6, 7 or invalid input
-                System.out.println("I'm not sure how to help with that yet. Please pick a number from the list.");
+                System.out.println("Invalid choice.");
             }
         }
     }
 
     public static void addAssignment() {
-        System.out.println("\n--- Let's add a new assignment ---");
-        
-        System.out.print("Which course is this for? ");
+        System.out.println("\n--- New Assignment ---");
+        System.out.print("Enter Course: ");
         String c = scanner.nextLine();
-        
-        System.out.print("What's the assignment title? ");
+        System.out.print("Enter Title: ");
         String t = scanner.nextLine();
-        
-        System.out.print("When is it due? ");
+        System.out.print("Enter Due Date: ");
         String d = scanner.nextLine();
-        
-        System.out.print("How many points is it worth? ");
+        System.out.print("Enter Points: ");
         try {
             int p = Integer.parseInt(scanner.nextLine());
-            
             courses.add(c);
             tasks.add(t);
             dueDates.add(d);
             points.add(p);
             progress.add(0);
-            
-            System.out.println("Awesome! I've added that to your list.");
-            
+            System.out.println("Assignment Added!");
         } catch (Exception e) {
-            System.out.println("Oops, that doesn't look like a valid number for points.");
+            System.out.println("Error: Invalid number.");
         }
     }
 
     public static void viewAll() {
-        System.out.println("\n--- Here's everything on your plate ---");
-        if (courses.size() == 0) {
-            System.out.println("Actually, it looks like you don't have any assignments yet.");
-            return;
-        }
+        System.out.println("\n--- All Tasks ---");
         for (int i = 0; i < courses.size(); i++) {
-            String info = courses.get(i) + " - " + tasks.get(i) + " (Due: " + dueDates.get(i) + ") [Pts: " + points.get(i) + "] - Completion: " + progress.get(i) + "%";
-            System.out.println((i + 1) + ". " + info);
+            System.out.println((i + 1) + ". " + courses.get(i) + " - " + tasks.get(i) + " (Due: " + dueDates.get(i) + ") [Pts: " + points.get(i) + "] - Completion: " + progress.get(i) + "%");
         }
     }
 
     public static void updateProgress() {
-        if (courses.size() == 0) {
-            System.out.println("No assignments to update right now.");
+        if (courses.isEmpty()) {
+            System.out.println("No assignments to update.");
             return;
         }
-        
         viewAll();
-        System.out.print("\nWhich assignment number do you want to update? ");
+        System.out.print("\nEnter assignment number to update: ");
         try {
             int choice = Integer.parseInt(scanner.nextLine()) - 1;
             if (choice < 0 || choice >= courses.size()) {
-                System.out.println("Hmm, that number isn't on the list.");
+                System.out.println("Invalid selection.");
                 return;
             }
-            
-            System.out.print("New progress percentage (0-100): ");
+            System.out.print("Enter progress percentage (0-100): ");
             int prog = Integer.parseInt(scanner.nextLine());
             if (prog < 0 || prog > 100) {
-                System.out.println("Progress needs to be between 0 and 100.");
+                System.out.println("Progress must be between 0 and 100.");
                 return;
             }
-            
             progress.set(choice, prog);
-            System.out.println("Got it! Updated progress for " + tasks.get(choice) + " to " + prog + "%.");
-            
+            System.out.println("Progress updated for " + tasks.get(choice) + ": " + prog + "%");
         } catch (Exception e) {
-            System.out.println("Oops, invalid input.");
+            System.out.println("Error: Invalid input.");
         }
     }
 
     public static void markAssignmentComplete() {
-        if (courses.size() == 0) {
-            System.out.println("No assignments to mark complete.");
+        if (courses.isEmpty()) {
+            System.out.println("No assignments to complete.");
             return;
         }
-        
         viewAll();
-        System.out.print("\nWhich assignment number did you finish? ");
+        System.out.print("\nEnter assignment number to mark complete: ");
         try {
             int choice = Integer.parseInt(scanner.nextLine()) - 1;
             if (choice < 0 || choice >= courses.size()) {
-                System.out.println("That's not a valid selection.");
+                System.out.println("Invalid selection.");
                 return;
             }
-            
             String completedTask = tasks.get(choice);
             courses.remove(choice);
             tasks.remove(choice);
             dueDates.remove(choice);
             points.remove(choice);
             progress.remove(choice);
-            
-            System.out.println("Nice work! '" + completedTask + "' is marked complete and removed from your list.");
-            
+            System.out.println("Assignment '" + completedTask + "' marked complete and removed from list.");
         } catch (Exception e) {
-            System.out.println("Oops, something went wrong with that input.");
+            System.out.println("Error: Invalid input.");
+        }
+    }
+
+    public static void viewByCourse() {
+        System.out.print("\nEnter Course Name: ");
+        String c = scanner.nextLine();
+        boolean found = false;
+        System.out.println("\n--- Tasks for " + c + " ---");
+        for (int i = 0; i < courses.size(); i++) {
+            if (courses.get(i).equalsIgnoreCase(c)) {
+                System.out.println("- " + tasks.get(i) + " (Due: " + dueDates.get(i) + ") [Pts: " + points.get(i) + "] - Completion: " + progress.get(i) + "%");
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No assignments found for this course.");
+        }
+    }
+
+    public static void viewAnalytics() {
+        if (courses.isEmpty()) {
+            System.out.println("No data for analytics.");
+            return;
+        }
+        int totalPoints = 0;
+        int totalProgress = 0;
+        for (int i = 0; i < courses.size(); i++) {
+            totalPoints += points.get(i);
+            totalProgress += progress.get(i);
+        }
+        int avgProgress = totalProgress / courses.size();
+        System.out.println("\n--- Workload Analytics ---");
+        System.out.println("Total Assignments: " + courses.size());
+        System.out.println("Total Points at Stake: " + totalPoints);
+        System.out.println("Average Completion: " + avgProgress + "%");
+    }
+
+    public static void manageCourses() {
+        System.out.println("\n--- Course Management ---");
+        Set<String> uniqueCourses = new HashSet<>(courses);
+        if (uniqueCourses.isEmpty()) {
+            System.out.println("No courses currently active.");
+            return;
+        }
+        System.out.println("Active Courses:");
+        for (String c : uniqueCourses) {
+            int count = 0;
+            for (String course : courses) {
+                if (course.equals(c)) {
+                    count++;
+                }
+            }
+            System.out.println("- " + c + " (" + count + " assignments)");
         }
     }
 }
