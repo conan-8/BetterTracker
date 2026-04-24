@@ -50,6 +50,7 @@ public class FinalProject {
             System.out.println("[7] Manage Courses");
             System.out.println("[8] Save and Exit");
             System.out.println("[9] Add by Paste");
+            System.out.println("[-] Sort Assignments");
             System.out.println("[0] Exit Without Saving");
             
             System.out.print("Enter choice: ");
@@ -81,6 +82,8 @@ public class FinalProject {
                 running = false;
             } else if (choice.equals("9")) {
                 addByPaste();
+            } else if (choice.equals("-")) {
+                sortAssignments();
             } else if (choice.equals("0")) {
                 running = false;
             } else {
@@ -269,5 +272,54 @@ public class FinalProject {
             }
         }
         System.out.println("Paste import complete.");
+    }
+
+    public static void sortAssignments() {
+        System.out.println("\n--- Sort Assignments ---");
+        System.out.println("[1] Sort by Course (Alphabetical)");
+        System.out.println("[2] Sort by Task (Alphabetical)");
+        System.out.println("[3] Sort by Due Date (Alphabetical)");
+        System.out.println("[4] Sort by Points (Highest first)");
+        System.out.print("Enter choice: ");
+        String sortChoice = scanner.nextLine();
+
+        int n = courses.size();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                boolean swap = false;
+                if (sortChoice.equals("1")) {
+                    if (courses.get(j).compareToIgnoreCase(courses.get(j + 1)) > 0) swap = true;
+                } else if (sortChoice.equals("2")) {
+                    if (tasks.get(j).compareToIgnoreCase(tasks.get(j + 1)) > 0) swap = true;
+                } else if (sortChoice.equals("3")) {
+                    if (dueDates.get(j).compareToIgnoreCase(dueDates.get(j + 1)) > 0) swap = true;
+                } else if (sortChoice.equals("4")) {
+                    if (points.get(j) < points.get(j + 1)) swap = true;
+                }
+
+                if (swap) {
+                    String tempCourse = courses.get(j);
+                    courses.set(j, courses.get(j + 1));
+                    courses.set(j + 1, tempCourse);
+
+                    String tempTask = tasks.get(j);
+                    tasks.set(j, tasks.get(j + 1));
+                    tasks.set(j + 1, tempTask);
+
+                    String tempDate = dueDates.get(j);
+                    dueDates.set(j, dueDates.get(j + 1));
+                    dueDates.set(j + 1, tempDate);
+
+                    int tempPoint = points.get(j);
+                    points.set(j, points.get(j + 1));
+                    points.set(j + 1, tempPoint);
+
+                    int tempProg = progress.get(j);
+                    progress.set(j, progress.get(j + 1));
+                    progress.set(j + 1, tempProg);
+                }
+            }
+        }
+        System.out.println("Assignments Sorted!");
     }
 }
