@@ -49,6 +49,7 @@ public class FinalProject {
             System.out.println("[6] View Workload Analytics");
             System.out.println("[7] Manage Courses");
             System.out.println("[8] Save and Exit");
+            System.out.println("[9] Add by Paste");
             System.out.println("[0] Exit Without Saving");
             
             System.out.print("Enter choice: ");
@@ -78,6 +79,8 @@ public class FinalProject {
                 myWriter.close();
                 System.out.println("Data saved.");
                 running = false;
+            } else if (choice.equals("9")) {
+                addByPaste();
             } else if (choice.equals("0")) {
                 running = false;
             } else {
@@ -217,5 +220,54 @@ public class FinalProject {
             }
             System.out.println("- " + c + " (" + count + " assignments)");
         }
+    }
+
+    public static void addByPaste() {
+        System.out.println("\n--- Add by Paste ---");
+        System.out.println("Paste your assignments (type 'DONE' on a new line to finish):");
+        
+        while (true) {
+            String line = scanner.nextLine();
+            if (line.equals("DONE")) {
+                break;
+            }
+            if (line.contains("Due ")) {
+                int dueIndex = line.indexOf("Due ");
+                String taskName = line.substring(0, dueIndex);
+                if (taskName.startsWith("Assignment.")) {
+                    taskName = taskName.substring("Assignment.".length());
+                } else if (taskName.startsWith(".")) {
+                    taskName = taskName.substring(1);
+                }
+                
+                String rest = line.substring(dueIndex + 4);
+                String dueDate = "";
+                String courseName = "";
+                
+                if (rest.contains(" pm")) {
+                    int pmIndex = rest.indexOf(" pm");
+                    dueDate = rest.substring(0, pmIndex + 3);
+                    courseName = rest.substring(pmIndex + 3);
+                } else if (rest.contains(" am")) {
+                    int amIndex = rest.indexOf(" am");
+                    dueDate = rest.substring(0, amIndex + 3);
+                    courseName = rest.substring(amIndex + 3);
+                } else if (rest.contains(" at")) {
+                    int atIndex = rest.indexOf(" at");
+                    dueDate = rest.substring(0, atIndex);
+                    courseName = rest.substring(atIndex + 3);
+                } else {
+                    continue;
+                }
+                
+                courses.add(courseName);
+                tasks.add(taskName);
+                dueDates.add(dueDate);
+                points.add(100);
+                progress.add(0);
+                System.out.println("Added: " + taskName + " for " + courseName);
+            }
+        }
+        System.out.println("Paste import complete.");
     }
 }
