@@ -19,17 +19,19 @@ public class FinalProject {
         boolean running = true;
 
         File myObj = new File("data.txt");
-        Scanner myReader = new Scanner(myObj);
-        while (myReader.hasNextLine()) {
-            String data = myReader.nextLine();
-            String[] parts = data.split(",");
-            courses.add(parts[0]);
-            tasks.add(parts[1]);
-            dueDates.add(parts[2]);
-            points.add(Integer.parseInt(parts[3]));
-            progress.add(Integer.parseInt(parts[4]));
+        if (myObj.exists()) {
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                String[] parts = data.split(",");
+                courses.add(parts[0]);
+                tasks.add(parts[1]);
+                dueDates.add(parts[2]);
+                points.add(Integer.parseInt(parts[3]));
+                progress.add(Integer.parseInt(parts[4]));
+            }
+            myReader.close();
         }
-        myReader.close();
 
         while (running) {
             System.out.println("\n- - - - - Quick Dashboard - - - - -");
@@ -140,8 +142,18 @@ public class FinalProject {
                 System.out.println("Progress must be between 0 and 100.");
                 return;
             }
-            progress.set(choice, prog);
-            System.out.println("Progress updated for " + tasks.get(choice) + ": " + prog + "%");
+            if (prog == 100) {
+                String completedTask = tasks.get(choice);
+                courses.remove(choice);
+                tasks.remove(choice);
+                dueDates.remove(choice);
+                points.remove(choice);
+                progress.remove(choice);
+                System.out.println("Assignment '" + completedTask + "' reached 100% and has been removed from the list.");
+            } else {
+                progress.set(choice, prog);
+                System.out.println("Progress updated for " + tasks.get(choice) + ": " + prog + "%");
+            }
         } catch (Exception e) {
             System.out.println("Error: Invalid input.");
         }
