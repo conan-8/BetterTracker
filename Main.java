@@ -6,12 +6,19 @@ import java.io.File;
 import java.io.FileWriter;
 
 public class FinalProject {
-    
+
     static ArrayList<String> courses = new ArrayList<String>();
     static ArrayList<String> tasks = new ArrayList<String>();
     static ArrayList<String> dueDates = new ArrayList<String>();
     static ArrayList<Integer> points = new ArrayList<Integer>();
     static ArrayList<Integer> progress = new ArrayList<Integer>();
+
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_CYAN = "\u001B[36m";
 
     static Scanner scanner = new Scanner(System.in);
 
@@ -34,15 +41,17 @@ public class FinalProject {
         }
 
         while (running) {
-            System.out.println("\n- - - - - Quick Dashboard - - - - -");
+            System.out.println("\n" + ANSI_CYAN + "- - - - - Quick Dashboard - - - - -" + ANSI_RESET);
             if (courses.size() > 0) {
-                System.out.println("Top Task: " + courses.get(0) + " - " + tasks.get(0) + " (Due: " + dueDates.get(0) + ") [Pts: " + points.get(0) + "] - Completion: " + progress.get(0) + "%");
+                System.out.println(ANSI_YELLOW + "Top Task: " + ANSI_BLUE + courses.get(0) + ANSI_RESET + " - "
+                        + tasks.get(0) + " (Due: " + ANSI_RED + dueDates.get(0)
+                        + ANSI_RESET + ") [Pts: " + points.get(0) + "] - Completion: " + progress.get(0) + "%");
             } else {
-                System.out.println("No tasks pending.");
+                System.out.println(ANSI_GREEN + "No tasks pending." + ANSI_RESET);
             }
-            System.out.println("- - - - - - - - - - - - - - -");
+            System.out.println(ANSI_CYAN + "- - - - - - - - - - - - - - -" + ANSI_RESET);
 
-            System.out.println("Actions:");
+            System.out.println(ANSI_CYAN + "Actions:" + ANSI_RESET);
             System.out.println("[1] Add Assignment");
             System.out.println("[2] View All Assignments");
             System.out.println("[3] Update Progress");
@@ -54,7 +63,7 @@ public class FinalProject {
             System.out.println("[9] Add by Paste");
             System.out.println("[-] Sort Assignments");
             System.out.println("[0] Exit Without Saving");
-            
+
             System.out.print("Enter choice: ");
             String choice = scanner.nextLine();
 
@@ -77,7 +86,8 @@ public class FinalProject {
             } else if (choice.equals("8")) {
                 FileWriter myWriter = new FileWriter("data.txt");
                 for (int i = 0; i < courses.size(); i++) {
-                    myWriter.write(courses.get(i) + "," + tasks.get(i) + "," + dueDates.get(i) + "," + points.get(i) + "," + progress.get(i) + "\n");
+                    myWriter.write(courses.get(i) + "," + tasks.get(i) + "," + dueDates.get(i) + "," + points.get(i)
+                            + "," + progress.get(i) + "\n");
                 }
                 myWriter.close();
                 System.out.println("Data saved.");
@@ -110,16 +120,18 @@ public class FinalProject {
             dueDates.add(d);
             points.add(p);
             progress.add(0);
-            System.out.println("Assignment Added!");
+            System.out.println(ANSI_GREEN + "Assignment Added!" + ANSI_RESET);
         } catch (Exception e) {
-            System.out.println("Error: Invalid number.");
+            System.out.println(ANSI_RED + "Error: Invalid number." + ANSI_RESET);
         }
     }
 
     public static void viewAll() {
-        System.out.println("\n--- All Tasks ---");
+        System.out.println("\n" + ANSI_CYAN + "--- All Tasks ---" + ANSI_RESET);
         for (int i = 0; i < courses.size(); i++) {
-            System.out.println((i + 1) + ". " + courses.get(i) + " - " + tasks.get(i) + " (Due: " + dueDates.get(i) + ") [Pts: " + points.get(i) + "] - Completion: " + progress.get(i) + "%");
+            System.out.println(ANSI_YELLOW + (i + 1) + ". " + ANSI_BLUE + courses.get(i) + ANSI_RESET + " - "
+                    + tasks.get(i) + " (Due: " + ANSI_RED + dueDates.get(i)
+                    + ANSI_RESET + ") [Pts: " + points.get(i) + "] - Completion: " + progress.get(i) + "%");
         }
     }
 
@@ -149,13 +161,16 @@ public class FinalProject {
                 dueDates.remove(choice);
                 points.remove(choice);
                 progress.remove(choice);
-                System.out.println("Assignment '" + completedTask + "' reached 100% and has been removed from the list.");
+                System.out
+                        .println(ANSI_GREEN + "Assignment '" + completedTask
+                                + "' reached 100% and has been removed from the list." + ANSI_RESET);
             } else {
                 progress.set(choice, prog);
-                System.out.println("Progress updated for " + tasks.get(choice) + ": " + prog + "%");
+                System.out.println(
+                        ANSI_GREEN + "Progress updated for " + tasks.get(choice) + ": " + prog + "%" + ANSI_RESET);
             }
         } catch (Exception e) {
-            System.out.println("Error: Invalid input.");
+            System.out.println(ANSI_RED + "Error: Invalid input." + ANSI_RESET);
         }
     }
 
@@ -178,9 +193,10 @@ public class FinalProject {
             dueDates.remove(choice);
             points.remove(choice);
             progress.remove(choice);
-            System.out.println("Assignment '" + completedTask + "' marked complete and removed from list.");
+            System.out.println(ANSI_GREEN + "Assignment '" + completedTask + "' marked complete and removed from list."
+                    + ANSI_RESET);
         } catch (Exception e) {
-            System.out.println("Error: Invalid input.");
+            System.out.println(ANSI_RED + "Error: Invalid input." + ANSI_RESET);
         }
     }
 
@@ -191,7 +207,8 @@ public class FinalProject {
         System.out.println("\n--- Tasks for " + c + " ---");
         for (int i = 0; i < courses.size(); i++) {
             if (courses.get(i).equalsIgnoreCase(c)) {
-                System.out.println("- " + tasks.get(i) + " (Due: " + dueDates.get(i) + ") [Pts: " + points.get(i) + "] - Completion: " + progress.get(i) + "%");
+                System.out.println("- " + tasks.get(i) + " (Due: " + dueDates.get(i) + ") [Pts: " + points.get(i)
+                        + "] - Completion: " + progress.get(i) + "%");
                 found = true;
             }
         }
@@ -240,7 +257,7 @@ public class FinalProject {
     public static void addByPaste() {
         System.out.println("\n--- Add by Paste ---");
         System.out.println("Paste your assignments (type 'DONE' on a new line to finish):");
-        
+
         while (true) {
             String line = scanner.nextLine();
             if (line.equals("DONE")) {
@@ -254,11 +271,11 @@ public class FinalProject {
                 } else if (taskName.startsWith(".")) {
                     taskName = taskName.substring(1);
                 }
-                
+
                 String rest = line.substring(dueIndex + 4);
                 String dueDate = "";
                 String courseName = "";
-                
+
                 if (rest.contains(" pm")) {
                     int pmIndex = rest.indexOf(" pm");
                     dueDate = rest.substring(0, pmIndex + 3);
@@ -274,7 +291,7 @@ public class FinalProject {
                 } else {
                     continue;
                 }
-                
+
                 courses.add(courseName);
                 tasks.add(taskName);
                 dueDates.add(dueDate);
@@ -300,13 +317,17 @@ public class FinalProject {
             for (int j = 0; j < n - i - 1; j++) {
                 boolean swap = false;
                 if (sortChoice.equals("1")) {
-                    if (courses.get(j).compareToIgnoreCase(courses.get(j + 1)) > 0) swap = true;
+                    if (courses.get(j).compareToIgnoreCase(courses.get(j + 1)) > 0)
+                        swap = true;
                 } else if (sortChoice.equals("2")) {
-                    if (tasks.get(j).compareToIgnoreCase(tasks.get(j + 1)) > 0) swap = true;
+                    if (tasks.get(j).compareToIgnoreCase(tasks.get(j + 1)) > 0)
+                        swap = true;
                 } else if (sortChoice.equals("3")) {
-                    if (dueDates.get(j).compareToIgnoreCase(dueDates.get(j + 1)) > 0) swap = true;
+                    if (dueDates.get(j).compareToIgnoreCase(dueDates.get(j + 1)) > 0)
+                        swap = true;
                 } else if (sortChoice.equals("4")) {
-                    if (points.get(j) < points.get(j + 1)) swap = true;
+                    if (points.get(j) < points.get(j + 1))
+                        swap = true;
                 }
 
                 if (swap) {
