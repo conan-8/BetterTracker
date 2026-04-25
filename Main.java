@@ -7,12 +7,14 @@ import java.io.FileWriter;
 
 public class FinalProject {
 
+    // storing everything in parallel lists, a bit messy but it works
     static ArrayList<String> courses = new ArrayList<String>();
     static ArrayList<String> tasks = new ArrayList<String>();
     static ArrayList<String> dueDates = new ArrayList<String>();
     static ArrayList<Integer> points = new ArrayList<Integer>();
     static ArrayList<Integer> progress = new ArrayList<Integer>();
 
+    // colors for the terminal output
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_GREEN = "\u001B[32m";
@@ -25,6 +27,7 @@ public class FinalProject {
     public static void main(String[] args) throws Exception {
         boolean running = true;
 
+        // load saved data if it exists from last session
         File myObj = new File("data.txt");
         if (myObj.exists()) {
             Scanner myReader = new Scanner(myObj);
@@ -41,6 +44,7 @@ public class FinalProject {
         }
 
         while (running) {
+            // quick preview of the first task at the top
             System.out.println("\n" + ANSI_CYAN + "- - - - - Quick Dashboard - - - - -" + ANSI_RESET);
             if (courses.size() > 0) {
                 System.out.println(ANSI_YELLOW + "Top Task: " + ANSI_BLUE + courses.get(0) + ANSI_RESET + " - "
@@ -84,6 +88,7 @@ public class FinalProject {
             } else if (choice.equals("7")) {
                 manageCourses();
             } else if (choice.equals("8")) {
+                // write everything back to the file line by line
                 FileWriter myWriter = new FileWriter("data.txt");
                 for (int i = 0; i < courses.size(); i++) {
                     myWriter.write(courses.get(i) + "," + tasks.get(i) + "," + dueDates.get(i) + "," + points.get(i)
@@ -119,7 +124,7 @@ public class FinalProject {
             tasks.add(t);
             dueDates.add(d);
             points.add(p);
-            progress.add(0);
+            progress.add(0); // starts at 0% obviously
             System.out.println(ANSI_GREEN + "Assignment Added!" + ANSI_RESET);
         } catch (Exception e) {
             System.out.println(ANSI_RED + "Error: Invalid number." + ANSI_RESET);
@@ -154,6 +159,7 @@ public class FinalProject {
                 System.out.println("Progress must be between 0 and 100.");
                 return;
             }
+            // if they hit 100 just remove it, same as marking complete
             if (prog == 100) {
                 String completedTask = tasks.get(choice);
                 courses.remove(choice);
@@ -187,6 +193,7 @@ public class FinalProject {
                 System.out.println("Invalid selection.");
                 return;
             }
+            // just delete it from all the lists
             String completedTask = tasks.get(choice);
             courses.remove(choice);
             tasks.remove(choice);
@@ -206,6 +213,7 @@ public class FinalProject {
         boolean found = false;
         System.out.println("\n--- Tasks for " + c + " ---");
         for (int i = 0; i < courses.size(); i++) {
+            // case insensitive so "math" and "Math" both work
             if (courses.get(i).equalsIgnoreCase(c)) {
                 System.out.println("- " + tasks.get(i) + " (Due: " + dueDates.get(i) + ") [Pts: " + points.get(i)
                         + "] - Completion: " + progress.get(i) + "%");
@@ -228,6 +236,7 @@ public class FinalProject {
             totalPoints += points.get(i);
             totalProgress += progress.get(i);
         }
+        // simple average, nothing fancy
         int avgProgress = totalProgress / courses.size();
         System.out.println("\n--- Workload Analytics ---");
         System.out.println("Total Assignments: " + courses.size());
@@ -237,6 +246,7 @@ public class FinalProject {
 
     public static void manageCourses() {
         System.out.println("\n--- Course Management ---");
+        // hashset removes duplicates so we get unique courses only
         Set<String> uniqueCourses = new HashSet<>(courses);
         if (uniqueCourses.isEmpty()) {
             System.out.println("No courses currently active.");
@@ -244,6 +254,7 @@ public class FinalProject {
         }
         System.out.println("Active Courses:");
         for (String c : uniqueCourses) {
+            // count how many assignments belong to each course
             int count = 0;
             for (String course : courses) {
                 if (course.equals(c)) {
@@ -263,9 +274,11 @@ public class FinalProject {
             if (line.equals("DONE")) {
                 break;
             }
+            // only bother parsing lines that have a due date in them
             if (line.contains("Due ")) {
                 int dueIndex = line.indexOf("Due ");
                 String taskName = line.substring(0, dueIndex);
+                // strip the prefix stuff that canvas sometimes adds
                 if (taskName.startsWith("Assignment.")) {
                     taskName = taskName.substring("Assignment.".length());
                 } else if (taskName.startsWith(".")) {
@@ -276,6 +289,7 @@ public class FinalProject {
                 String dueDate = "";
                 String courseName = "";
 
+                // figure out where the date ends based on am/pm
                 if (rest.contains(" pm")) {
                     int pmIndex = rest.indexOf(" pm");
                     dueDate = rest.substring(0, pmIndex + 3);
@@ -289,13 +303,13 @@ public class FinalProject {
                     dueDate = rest.substring(0, atIndex);
                     courseName = rest.substring(atIndex + 3);
                 } else {
-                    continue;
+                    continue; // cant parse it, skip
                 }
 
                 courses.add(courseName);
                 tasks.add(taskName);
                 dueDates.add(dueDate);
-                points.add(100);
+                points.add(100); // default to 100 pts since we dont know
                 progress.add(0);
                 System.out.println("Added: " + taskName + " for " + courseName);
             }
@@ -312,6 +326,7 @@ public class FinalProject {
         System.out.print("Enter choice: ");
         String sortChoice = scanner.nextLine();
 
+        // bubble sort - slow but fine for small lists
         int n = courses.size();
         for (int i = 0; i < n - 1; i++) {
             for (int j = 0; j < n - i - 1; j++) {
@@ -330,6 +345,7 @@ public class FinalProject {
                         swap = true;
                 }
 
+                // swap all 5 lists together to keep everything aligned
                 if (swap) {
                     String tempCourse = courses.get(j);
                     courses.set(j, courses.get(j + 1));
